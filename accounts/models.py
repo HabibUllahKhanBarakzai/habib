@@ -9,14 +9,14 @@ class User(models.Model):
         ("OTHER", "Other")
     )
 
-    name = models.CharField( max_length=60, blank=False)
-    father_name = models.CharField(max_length=60, blank=False)
+    name = models.CharField(max_length=60, blank=False)
+    father_name = models.CharField(max_length=60, blank=True)
     gender = models.CharField(choices=GENDER_OPTIONS, max_length=10, null=True, blank=True)
-    date_of_birth = models.DateField(null=True, blank=False)
+    date_of_birth = models.DateField(null=True, blank=True)
     is_live_user = models.BooleanField(default=True, verbose_name='Is_Live_User')
     is_maintenance_user = models.BooleanField(default=False, verbose_name='Maintenance_User')
     address = models. CharField(max_length=250)
-    CNIC_number = models.IntegerField(blank=False, unique=True)
+    CNIC_number = models.CharField(blank=False, unique=True, max_length=15)
 
 
 class Mobile(models.Model):
@@ -37,19 +37,21 @@ class Mobile(models.Model):
     type = models.CharField(max_length=10)
     mobile_status = models.CharField(choices=status_choice, max_length=5)
     IMEA_number = models.CharField(max_length=50, unique=True)
+    is_sold = models.BooleanField(default=False, verbose_name="Is product in inventory or sold")
 
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_customer")
-    installments_payed = ArrayField(JSONField(), verbose_name="History of installments payed", default=[])
+    installments_payed = ArrayField(JSONField(), verbose_name="History of installments payed", default=list)
 
 
 class Transactions(models.Model):
     sold_item = models.ForeignKey(Mobile, on_delete=models.CASCADE, related_name="sale")
     date_of_sale = models.DateField(default=None)
     amount_payed = models.PositiveIntegerField(default=0)
-    insurer_one = models.ForeignKey(User, on_delete=models.CASCADE, related_name="first_insurer")
-    insurer_two = models.ForeignKey(User, on_delete=models.CASCADE, related_name="second_insurer")
+    amount_remaining = models.PositiveIntegerField(default=0)
+    # insurer_one = models.ForeignKey(User, on_delete=models.CASCADE, related_name="first_insurer")
+    # insurer_two = models.ForeignKey(User, on_delete=models.CASCADE, related_name="second_insurer")
     next_installment_due = models.DateField(default=None, verbose_name="Next Installment Date")
     previous_installment_payed = models.DateField(default=None, verbose_name="Previous Installment Payed")
     number_of_installments_payed = models.PositiveIntegerField(default=0, verbose_name="Number Of Installments Payed")
