@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import OurUser, Mobile, Transactions, Customer
+from .models import Our_User, Mobile, Transactions, Customer
 
 #
 # @admin.register(User)
@@ -11,7 +11,7 @@ class MobileAdmin(admin.ModelAdmin):
     list_display = ('IMEA_number', )
 
 
-@admin.register(OurUser)
+@admin.register(Our_User)
 class MobileAdmin(admin.ModelAdmin):
     list_display = ('name', 'CNIC_number')
 

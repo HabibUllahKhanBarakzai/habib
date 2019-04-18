@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.exceptions import ValidationError
 import datetime
-from accounts.models import Transactions, Customer, OurUser, Mobile
+from accounts.models import Transactions, Customer, Our_User, Mobile
 
 
 class CustomerCreateSerializer(Serializer):
@@ -19,8 +19,8 @@ class CustomerCreateSerializer(Serializer):
 
         except Customer.DoesNotExist:
 
-            if OurUser.objects.filter(CNIC_number=CNIC_number).exists():
-                user = OurUser.objects.get(CNIC_number=CNIC_number)
+            if Our_User.objects.filter(CNIC_number=CNIC_number).exists():
+                user = Our_User.objects.get(CNIC_number=CNIC_number)
                 customer_existing = Customer.objects.create(user=user)
                 return customer_existing
 
@@ -28,13 +28,13 @@ class CustomerCreateSerializer(Serializer):
 
                 print(validated_data.get("date_of_birth"))
                 print(type(validated_data))
-                user = OurUser.objects.create(CNIC_number=CNIC_number,
-                                              name=customer.get("name"),
-                                              father_name=customer.get("father_name"),
-                                              gender=customer.get("gender"),
-                                              address=customer.get("address"),
-                                              is_live_user=customer.get("is_live_user"),
-                                              is_maintenance_user=customer.get(
+                user = Our_User.objects.create(CNIC_number=CNIC_number,
+                                               name=customer.get("name"),
+                                               father_name=customer.get("father_name"),
+                                               gender=customer.get("gender"),
+                                               address=customer.get("address"),
+                                               is_live_user=customer.get("is_live_user"),
+                                               is_maintenance_user=customer.get(
                                                    "is_maintenance_user"))
                 customer_new = Customer.objects.create(user=user)
                 return customer_new
@@ -62,11 +62,11 @@ class TransactionSerializer(ModelSerializer):
         else:
             insurer1 = self.initial_data.get("insurer_one")
             insurer2 = self.initial_data.get("insurer_two")
-            user_1, is_created = OurUser.objects.get_or_create(name=insurer1.get("name"),
-                                                               CNIC_number=insurer1.get(
+            user_1, is_created = Our_User.objects.get_or_create(name=insurer1.get("name"),
+                                                                CNIC_number=insurer1.get(
                                                                     "cnic_number"))
-            user_2, is_created = OurUser.objects.get_or_create(name=insurer2.get("name"),
-                                                               CNIC_number=insurer2.get(
+            user_2, is_created = Our_User.objects.get_or_create(name=insurer2.get("name"),
+                                                                CNIC_number=insurer2.get(
                                                                     "cnic_number"))
             today = datetime.datetime.now().date()
 
@@ -121,7 +121,7 @@ class TransactionSerializer(ModelSerializer):
 
 class UserSerializer(ModelSerializer):
     class Meta:
-        model = OurUser
+        model = Our_User
         fields = "__all__"
 
 

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
 
 
-class OurUser(models.Model):
+class Our_User(models.Model):
     GENDER_OPTIONS = (
         ("Male", "Male"),
         ("FEMALE", "Female"),
@@ -41,7 +41,7 @@ class Mobile(models.Model):
 
 
 class Customer(models.Model):
-    user = models.OneToOneField(OurUser, on_delete=models.CASCADE, related_name="user_customer")
+    user = models.OneToOneField(Our_User, on_delete=models.CASCADE, related_name="user_customer")
     installments_payed = ArrayField(JSONField(), verbose_name="History of installments payed",
                                     default=list)
 
@@ -52,9 +52,9 @@ class Transactions(models.Model):
     amount_payed = models.PositiveIntegerField(default=0)
     amount_remaining = models.PositiveIntegerField(default=0)
     insurer_one = models.ForeignKey(
-        OurUser, on_delete=models.CASCADE, related_name="first_insurer")
+        Our_User, on_delete=models.CASCADE, related_name="first_insurer")
     insurer_two = models.ForeignKey(
-        OurUser, on_delete=models.CASCADE, related_name="second_insurer")
+        Our_User, on_delete=models.CASCADE, related_name="second_insurer")
     next_installment_due = models.DateField(default=None, verbose_name="Next Installment Date")
     previous_installment_payed = models.DateField(
         default=None, verbose_name="Previous Installment Payed")
