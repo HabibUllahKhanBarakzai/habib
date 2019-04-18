@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField,JSONField
 
 
-class User(models.Model):
+class Our_User(models.Model):
     GENDER_OPTIONS = (
         ("Male", "Male"),
         ("FEMALE", "Female"),
@@ -37,11 +37,11 @@ class Mobile(models.Model):
     type = models.CharField(max_length=10)
     mobile_status = models.CharField(choices=status_choice, max_length=5)
     IMEA_number = models.CharField(max_length=50, unique=True)
-    is_sold = models.BooleanField(default=False, verbose_name="Is product in inventory or sold")
+    is_sold = models.BooleanField(default=False, verbose_name="Is product sold")
 
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_customer")
+    user = models.OneToOneField(Our_User, on_delete=models.CASCADE, related_name="user_customer")
     installments_payed = ArrayField(JSONField(), verbose_name="History of installments payed", default=list)
 
 
@@ -50,8 +50,8 @@ class Transactions(models.Model):
     date_of_sale = models.DateField(default=None)
     amount_payed = models.PositiveIntegerField(default=0)
     amount_remaining = models.PositiveIntegerField(default=0)
-    # insurer_one = models.ForeignKey(User, on_delete=models.CASCADE, related_name="first_insurer")
-    # insurer_two = models.ForeignKey(User, on_delete=models.CASCADE, related_name="second_insurer")
+    insurer_one = models.ForeignKey(Our_User, on_delete=models.CASCADE, related_name="first_insurer")
+    insurer_two = models.ForeignKey(Our_User, on_delete=models.CASCADE, related_name="second_insurer")
     next_installment_due = models.DateField(default=None, verbose_name="Next Installment Date")
     previous_installment_payed = models.DateField(default=None, verbose_name="Previous Installment Payed")
     number_of_installments_payed = models.PositiveIntegerField(default=0, verbose_name="Number Of Installments Payed")

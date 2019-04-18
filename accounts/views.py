@@ -23,7 +23,7 @@ class TransactionViewSet(ModelViewSet):
     model = Transactions
 
     def get_serializer_class(self):
-
+        print("in views")
         if self.action in ['list', 'retrieve']:
             return GetTransactionSerializer
 
