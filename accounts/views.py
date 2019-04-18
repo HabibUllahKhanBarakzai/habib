@@ -19,11 +19,11 @@ class HelloView(APIView):
 
 class TransactionViewSet(ModelViewSet):
 
-    queryset = Transactions.objects.all()
+    queryset = Transactions.objects.all().select_related("customer", "sold_item", "insurer_one", "insurer_two")
     model = Transactions
 
     def get_serializer_class(self):
-        print("in views")
+
         if self.action in ['list', 'retrieve']:
             return GetTransactionSerializer
 
