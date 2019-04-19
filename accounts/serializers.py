@@ -4,6 +4,28 @@ import datetime
 from accounts.models import Transactions, Customer, Our_User, Mobile
 
 
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = Our_User
+        fields = "__all__"
+
+
+class CustomerSerializer(ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Customer
+        fields = "__all__"
+
+
+class GetTransactionSerializer(ModelSerializer):
+    customer = CustomerSerializer()
+
+    class Meta:
+        model = Transactions
+        fields = "__all__"
+
+
 class CustomerCreateSerializer(Serializer):
     class Meta:
         model = Customer
@@ -43,7 +65,8 @@ class CustomerCreateSerializer(Serializer):
             return customer
 
 
-class TransactionSerializer(ModelSerializer):
+class TransactionSerializer(Serializer):
+
     class Meta:
         model = Transactions
         fields = "__all__"
@@ -119,23 +142,3 @@ class TransactionSerializer(ModelSerializer):
         return instance
 
 
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = Our_User
-        fields = "__all__"
-
-
-class CustomerSerializer(ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model = Customer
-        fields = "__all__"
-
-
-class GetTransactionSerializer(ModelSerializer):
-    customer = CustomerSerializer()
-
-    class Meta:
-        model = Transactions
-        fields = "__all__"
