@@ -108,3 +108,4 @@ media/
 *.db
 *.pid
 .idea/
+.idea/*
