@@ -56,7 +56,8 @@ class CustomerCreateSerializer(Serializer):
                                                gender=customer.get("gender"),
                                                address=customer.get("address"),
                                                is_live_user=customer.get("is_live_user"),
-                                               is_maintenance_user=customer.get("is_maintenance_user"))
+                                               is_maintenance_user=customer.get(
+                                                   "is_maintenance_user"))
                 customer_new = Customer.objects.create(user=user)
                 return customer_new
 
@@ -85,15 +86,18 @@ class TransactionSerializer(Serializer):
             insurer1 = self.initial_data.get("insurer_one")
             insurer2 = self.initial_data.get("insurer_two")
             user_1, is_created = Our_User.objects.get_or_create(name=insurer1.get("name"),
-                                                                CNIC_number=insurer1.get("cnic_number"))
+                                                                CNIC_number=insurer1.get(
+                                                                    "cnic_number"))
             user_2, is_created = Our_User.objects.get_or_create(name=insurer2.get("name"),
-                                                                CNIC_number=insurer2.get("cnic_number"))
+                                                                CNIC_number=insurer2.get(
+                                                                    "cnic_number"))
             today = datetime.datetime.now().date()
 
             price = our_mobile.price
             payed = self.initial_data.get("amount_payed")
             amount_remaining = price - payed
-            next_installment = self.initial_data.get("next_installment") if self.initial_data.get("next_installment") \
+            next_installment = self.initial_data.get("next_installment") if self.initial_data.get(
+                "next_installment") \
                 else today + datetime.timedelta(days=30)
 
             installment_history = {
@@ -131,7 +135,8 @@ class TransactionSerializer(Serializer):
         instance.customer.installments_payed.append(data)
         instance.customer.save()
         next_installment = self.initial_data.get("next_installment_due", None)
-        instance.next_installment_due = next_installment if next_installment is not None else (today + datetime.timedelta(days=30))
+        instance.next_installment_due = next_installment if next_installment is not None else (
+                    today + datetime.timedelta(days=30))
         instance.save()
 
         return instance
