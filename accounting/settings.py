@@ -77,27 +77,28 @@ WSGI_APPLICATION = 'accounting.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'de6uia9q84kv4t',
+#         'USER': 'peygufjqeibsys',
+#         'PASSWORD': '3cf13ec928c694f9ada72f0dcc16a660199f594c1bf130a4ca63f3b1649f3683',
+#         'HOST': 'ec2-174-129-10-235.compute-1.amazonaws.com',
+#         'PORT': '5432'
+#     }
+#  }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'de6uia9q84kv4t',
-        'USER': 'peygufjqeibsys',
-        'PASSWORD': '3cf13ec928c694f9ada72f0dcc16a660199f594c1bf130a4ca63f3b1649f3683',
-        'HOST': 'ec2-174-129-10-235.compute-1.amazonaws.com',
-        'PORT': '5432'
+        'NAME': 'mobile',
+        'USER': 'waheed',
+        'PASSWORD': 'habib',
+        'HOST': 'localhost',
+        'PORT': '',
     }
- }
-    # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'mobile',
-#         'USER': 'waheed',
-#         'PASSWORD': 'habib',
-#         'HOST': 'localhost',
-#         'PORT': '',
-#     }
-# }
+}
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -142,4 +143,5 @@ REST_FRAMEWORK = {
 
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

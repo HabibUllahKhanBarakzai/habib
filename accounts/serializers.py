@@ -1,7 +1,16 @@
 from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.exceptions import ValidationError
+
 import datetime
+
 from accounts.models import Transactions, Customer, Our_User, Mobile
+from django.http import Http404
+
+
+class MobileSerializer(ModelSerializer):
+    class Meta:
+        model = Mobile
+        fields = "__all__"
 
 
 class UserSerializer(ModelSerializer):
@@ -20,6 +29,9 @@ class CustomerSerializer(ModelSerializer):
 
 class GetTransactionSerializer(ModelSerializer):
     customer = CustomerSerializer()
+    sold_item = MobileSerializer()
+    insurer_one = UserSerializer()
+    insurer_two = UserSerializer()
 
     class Meta:
         model = Transactions
@@ -48,16 +60,14 @@ class CustomerCreateSerializer(Serializer):
 
             else:
 
-                print(validated_data.get("date_of_birth"))
-                print(type(validated_data))
                 user = Our_User.objects.create(CNIC_number=CNIC_number,
                                                name=customer.get("name"),
                                                father_name=customer.get("father_name"),
                                                gender=customer.get("gender"),
-                                               address=customer.get("address"),
-                                               is_live_user=customer.get("is_live_user"),
-                                               is_maintenance_user=customer.get(
-                                                   "is_maintenance_user"))
+                                               house_address=customer.get("house_address"),
+                                               business_address=customer.get("business_address")
+                                               )
+
                 customer_new = Customer.objects.create(user=user)
                 return customer_new
 
@@ -73,16 +83,20 @@ class TransactionSerializer(Serializer):
 
     def create(self, validated_data):
 
-        CustomerSerializer = CustomerCreateSerializer()
-        customer = CustomerSerializer.create(validated_data=self.context['request'].data)
+        if self.context['request'].data is None:
+            raise Http404
+
+        customer_serializer = CustomerCreateSerializer()
+        customer = customer_serializer.create(validated_data=self.context['request'].data)
         mobile = self.initial_data.get("mobile")
         try:
-            our_mobile = Mobile.objects.get(IMEA_number=mobile.get("IMEA_number"), is_sold=False)
+            our_mobile = Mobile.objects.get(IMEA_number=mobile.get("IMEI_number"), is_sold=False)
 
         except Mobile.DoesNotExist:
             raise ValidationError("mobile with that IMEA number is not in inventory")
 
         else:
+            # todo: improve the insurer so that all our_user fields will be populated for insurer
             insurer1 = self.initial_data.get("insurer_one")
             insurer2 = self.initial_data.get("insurer_two")
             user_1, is_created = Our_User.objects.get_or_create(name=insurer1.get("name"),
@@ -104,41 +118,41 @@ class TransactionSerializer(Serializer):
                 "date": today.strftime("%Y-%m-%d"),
                 "amount": payed
             }
-            customer.installments_payed.append(installment_history)
-            customer.save()
+            installment_amount = self.initial_data.get("installment")
             our_mobile.is_sold = True
             our_mobile.save()
             transaction = Transactions.objects.create(customer=customer,
                                                       sold_item=our_mobile,
                                                       date_of_sale=today,
-                                                      previous_installment_payed=today,
                                                       amount_remaining=amount_remaining,
                                                       next_installment_due=next_installment,
                                                       insurer_one=user_1,
                                                       insurer_two=user_2,
-                                                      number_of_installments_payed=1)
+                                                      number_of_installments_payed=1,
+                                                      installment_amount=installment_amount)
+            transaction.installments_payed.append(installment_history)
+            transaction.save()
             return transaction
 
     def update(self, instance, validated_data):
 
-        installment = self.initial_data.get("installment", None)
+        installment = self.initial_data.get("installment", None) if self.initial_data.get("installment")\
+            else instance.installment_amount
+
         today = datetime.datetime.now().date()
 
         instance.amount_payed = instance.amount_payed + installment
         instance.amount_remaining = instance.sold_item.price - instance.amount_payed
-        instance.previous_installment_payed = today
         instance.number_of_installments_payed += 1
         data = {
             "date": today.strftime("%Y-%m-%d"),
             "amount": installment
         }
-        instance.customer.installments_payed.append(data)
-        instance.customer.save()
+        instance.installments_payed.append(data)
         next_installment = self.initial_data.get("next_installment_due", None)
         instance.next_installment_due = next_installment if next_installment is not None else (
                     today + datetime.timedelta(days=30))
         instance.save()
-
         return instance
 
 
