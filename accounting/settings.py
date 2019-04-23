@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     # 'json_field',
-    'accounts'
+    'accounts',
+    'supply'
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,9 @@ WSGI_APPLICATION = 'accounting.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+#
+
+
 
 DATABASES = {
     'default': {

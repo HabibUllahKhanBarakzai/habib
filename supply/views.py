@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
+from supply.models import Supplier
 
-# Create your views here.
+
+class SupplyViewSet(ModelViewSet):
+    model = Supplier
+    queryset = Supplier.objects.all()
+
