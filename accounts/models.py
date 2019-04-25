@@ -20,22 +20,13 @@ class Our_User(models.Model):
 
 
 class Mobile(models.Model):
-    brand_choices = (
-        ("Samsung", "Samsung"),
-        ("IPhone", "IPhone"),
-        ("QMobile", "QMobile"),
-        ("Huawei", "Huawei"),
-        ("Nokia", "Nokia")
-    )
     status_choice = (
         ("used", "used"),
         ("New", "New")
     )
 
-    brand = models.CharField(choices=brand_choices, max_length=20)
     price = models.PositiveIntegerField()
     type = models.CharField(max_length=10)
-    mobile_status = models.CharField(choices=status_choice, max_length=5)
     IMEA_number = models.CharField(max_length=50, unique=True)
     is_sold = models.BooleanField(default=False, verbose_name="Is product sold")
 
@@ -56,7 +47,7 @@ class Transactions(models.Model):
     next_installment_due = models.DateField(default=None, verbose_name="Next Installment Date")
     number_of_installments_payed = models.PositiveIntegerField(
         default=0, verbose_name="Number Of Installments Payed")
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, related_name="customer")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer", unique=False)
     is_return = models.BooleanField(default=False)
     installments_payed = ArrayField(JSONField(), verbose_name="History of installments payed",
                                     default=list)

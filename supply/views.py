@@ -1,8 +1,9 @@
 from rest_framework.viewsets import ModelViewSet
-from supply.models import Supplier
+from supply.models import Supplier, Order
+from supply.serializers import OrderCreateSerializer
 
 
-class SupplyViewSet(ModelViewSet):
-    model = Supplier
-    queryset = Supplier.objects.all()
-
+class OrderViewSet(ModelViewSet):
+    model = Order
+    queryset = Order.objects.all()
+    serializer_class = OrderCreateSerializer

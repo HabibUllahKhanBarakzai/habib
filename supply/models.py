@@ -26,6 +26,10 @@ class Order(models.Model):
     price_payed = models.PositiveIntegerField()
     installment_amount = models.PositiveIntegerField()
     next_installment_due = models.DateField(default=datetime.datetime.now().date() + datetime.timedelta(days=30))
+    amount_remaining = models.PositiveIntegerField()
     installments_history = ArrayField(JSONField(), verbose_name="History of installments payed",
                                       default=list)
 
+    @property
+    def actual_price(self):
+        return self.total_price - (self.total_price * (self.discount/100))
