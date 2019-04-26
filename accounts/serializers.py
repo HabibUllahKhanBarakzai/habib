@@ -5,6 +5,7 @@ import datetime
 
 from accounts.models import Transactions, Customer, Our_User, Mobile
 from django.http import Http404
+from django.db.models import Q
 
 
 class MobileSerializer(ModelSerializer):
@@ -47,10 +48,8 @@ class CustomerCreateSerializer(Serializer):
 
         customer = validated_data.get("customer", None)
         CNIC_number = customer.get("cnic_number", None)
-
         try:
             customer = Customer.objects.get(user__CNIC_number=CNIC_number)
-
         except Customer.DoesNotExist:
 
             if Our_User.objects.filter(CNIC_number=CNIC_number).exists():
@@ -97,15 +96,22 @@ class TransactionSerializer(Serializer):
             raise ValidationError("mobile with that IMEA number is not in inventory")
 
         else:
+            print("")
             # todo: improve the insurer so that all our_user fields will be populated for insurer
             insurer1 = self.initial_data.get("insurer_one")
             insurer2 = self.initial_data.get("insurer_two")
-            user_1, is_created = Our_User.objects.get_or_create(name=insurer1.get("name"),
-                                                                CNIC_number=insurer1.get(
-                                                                    "cnic_number"))
-            user_2, is_created = Our_User.objects.get_or_create(name=insurer2.get("name"),
-                                                                CNIC_number=insurer2.get(
-                                                                    "cnic_number"))
+
+            user_1, is_created = Our_User.objects.get_or_create(CNIC_number=insurer1.get("cnic_number"))
+            user_2, is_created = Our_User.objects.get_or_create(CNIC_number=insurer2.get("cnic_number"))
+            user_1.name = insurer1.get("name")
+            user_1.house_address = insurer1.get("house_address")
+            user_1.office_address = insurer1.get("office_address")
+            user_1.save()
+            user_2.name=insurer2.get("name")
+            user_2.house_address = insurer2.get("house_address")
+            user_2.office_address = insurer2.get("office_address")
+            user_2.save()
+
             today = datetime.datetime.now().date()
 
             price = our_mobile.price
