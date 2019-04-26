@@ -61,7 +61,7 @@ class CustomerViewSet(ModelViewSet):
 
 
 class MobileViewSet(ModelViewSet):
-    http_method_names = ('GET', 'PATCH', 'PUT')
+    http_method_names = ('get', 'patch', 'put')
     model = Mobile
     serializer_class = MobileSerializer
     queryset = Mobile.objects.all()
