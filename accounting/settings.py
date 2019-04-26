@@ -78,17 +78,17 @@ WSGI_APPLICATION = 'accounting.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-#
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'mobile',
-#         'USER': 'waheed',
-#         'PASSWORD': 'habib',
-#         'HOST': 'localhost',
-#         'PORT': '',
-#     }
-# }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mobile',
+        'USER': 'waheed',
+        'PASSWORD': 'habib',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
