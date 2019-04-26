@@ -71,6 +71,6 @@ class MobileViewSet(ModelViewSet):
         imea_number = self.request.query_params.get("IMEA_number",None)
 
         if self.request.query_params.get("IMEA_number",None):
-            return Mobile.objects.filter(Q(IMEA_number__icontains=imea_number) | Q(IMEA_number=imea_number))
+            return Mobile.objects.filter(IMEA_number=imea_number)
 
         return Mobile.objects.all()
