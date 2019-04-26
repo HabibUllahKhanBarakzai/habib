@@ -3,6 +3,7 @@ import datetime
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from django.db.models import Q
 
 from accounts.models import Transactions, Customer, Mobile
 from accounts.serializers import TransactionSerializer, GetTransactionSerializer, CustomerSerializer, MobileSerializer
@@ -64,4 +65,12 @@ class MobileViewSet(ModelViewSet):
     http_method_names = ('get', 'patch', 'put')
     model = Mobile
     serializer_class = MobileSerializer
-    queryset = Mobile.objects.all()
+
+    def get_queryset(self):
+
+        imea_number = self.request.query_params.get("IMEA_number",None)
+
+        if self.request.query_params.get("IMEA_number",None):
+            return Mobile.objects.filter(Q(IMEA_number__icontains=imea_number) | Q(IMEA_number=imea_number))
+
+        return Mobile.objects.all()
