@@ -12,6 +12,7 @@ class Our_User(models.Model):
     name = models.CharField(max_length=60, blank=False)
     father_name = models.CharField(max_length=60, blank=True)
     gender = models.CharField(choices=GENDER_OPTIONS, max_length=10, null=True, blank=True)
+    phone_number = models.CharField(max_length=14, default="")
     date_of_birth = models.DateField(null=True, blank=True)
     is_live_user = models.BooleanField(default=True, verbose_name='Is Live User')
     house_address = models.CharField(max_length=250)

@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from accounts.models import Transactions
-from accounts.serializers import TransactionSerializer, GetTransactionSerializer
+from accounts.models import Transactions, Customer, Mobile
+from accounts.serializers import TransactionSerializer, GetTransactionSerializer, CustomerSerializer, MobileSerializer
 
 
 class TransactionViewSet(ModelViewSet):
@@ -52,3 +52,16 @@ class TransactionReportsViewSet(ReadOnlyModelViewSet):
         print(response_data)
 
         return Response(response_data)
+
+
+class CustomerViewSet(ModelViewSet):
+    model = Customer
+    serializer_class = CustomerSerializer
+    queryset = Customer.objects.all()
+
+
+class MobileViewSet(ModelViewSet):
+    http_method_names = ('GET', 'PATCH', 'PUT')
+    model = Mobile
+    serializer_class = MobileSerializer
+    queryset = Mobile.objects.all()

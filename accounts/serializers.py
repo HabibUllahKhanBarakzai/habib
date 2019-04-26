@@ -65,7 +65,8 @@ class CustomerCreateSerializer(Serializer):
                                                father_name=customer.get("father_name"),
                                                gender=customer.get("gender"),
                                                house_address=customer.get("house_address"),
-                                               business_address=customer.get("business_address")
+                                               business_address=customer.get("business_address"),
+                                               phone_number=customer.get("phone_number")
                                                )
 
                 customer_new = Customer.objects.create(user=user)
@@ -125,6 +126,7 @@ class TransactionSerializer(Serializer):
                                                       sold_item=our_mobile,
                                                       date_of_sale=today,
                                                       amount_remaining=amount_remaining,
+                                                      amount_payed=payed,
                                                       next_installment_due=next_installment,
                                                       insurer_one=user_1,
                                                       insurer_two=user_2,
@@ -140,7 +142,8 @@ class TransactionSerializer(Serializer):
             else instance.installment_amount
 
         today = datetime.datetime.now().date()
-
+        if installment > instance.amount_remaining:
+            raise ValidationError("amount remaining is less than installment amount you are entering")
         instance.amount_payed = instance.amount_payed + installment
         instance.amount_remaining = instance.sold_item.price - instance.amount_payed
         instance.number_of_installments_payed += 1
@@ -154,7 +157,3 @@ class TransactionSerializer(Serializer):
                     today + datetime.timedelta(days=30))
         instance.save()
         return instance
-
-
-
-
