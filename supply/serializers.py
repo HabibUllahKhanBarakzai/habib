@@ -1,7 +1,8 @@
-from .models import Supplier, Order, Purchase
+from .models import Supplier, Order, Purchase, Discount
 from accounts.models import Mobile
 import datetime
 from rest_framework.serializers import Serializer
+from rest_framework.exceptions import ValidationError
 
 
 class OrderCreateSerializer(Serializer):
@@ -17,7 +18,7 @@ class OrderCreateSerializer(Serializer):
         my_order = Order()
         my_order.supplier = supplier
         my_order.order_at = self.initial_data.get("ordered_at", tod)
-        my_order.received_at = self.initial_data.get("recieved_at", tod)
+        my_order.received_at = self.initial_data.get("received_at", tod)
         my_order.price_payed = self.initial_data.get("price_payed", 0)
         my_order.discount = self.initial_data.get("discount", 0)
         my_order.installment_amount = self.initial_data.get("installment_amount")
@@ -46,6 +47,22 @@ class OrderCreateSerializer(Serializer):
             purchase.save()
 
         my_order.total_price = price_complete
+        my_order.actual_price = price_complete
+
+        discounts = self.initial_data.get("discount")
+
+        for discount in discounts:
+            disc = Discount()
+            disc.discount_type = discount.get("type", 0)
+            disc.amount = discount.get("amount")
+            disc.reason = discount.get("reason")
+            disc.order = my_order
+            if discount.get("type", 0) == 0:
+                my_order.actual_price = my_order.actual_price - (my_order.actual_price * disc.amount/100)
+
+            elif discount.get("type", 0) == 1:
+                my_order.actual_price = my_order.actual_price - disc.amount
+
         my_order.next_installment_due = self.initial_data.get("next_installment_due", None)
         data = {
             "installment": my_order.price_payed,
@@ -59,10 +76,10 @@ class OrderCreateSerializer(Serializer):
     def update(self, instance, validated_data):
         installment = self.initial_data.get("installment")
         if installment is None:
-            raise ValueError("Please Enter installment amount")
+            raise ValidationError("Please Enter installment amount")
 
         if installment > instance.amount_remaining:
-            raise ValueError("remaining amount is less than instalment amount you are entering")
+            raise ValidationError("remaining amount is less than instalment amount you are entering")
 
         today = datetime.datetime.now()
 
