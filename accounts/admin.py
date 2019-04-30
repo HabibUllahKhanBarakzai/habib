@@ -19,4 +19,4 @@ class MobileAdmin(admin.ModelAdmin):
 @admin.register(Transactions)
 class MobileAdmin(admin.ModelAdmin):
     list_display = ('sold_item', )
-    raw_id_fields = ('sold_item', 'customer')
+    raw_id_fields = ('sold_item', 'customer', 'insurer_one', 'insurer_two')

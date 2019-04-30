@@ -1,5 +1,6 @@
 from django.urls import include
 from django.urls import path
+from rest_framework.urls import url
 
 from rest_framework import routers
 
@@ -12,5 +13,7 @@ router.register('mobile', views.MobileViewSet, base_name="mobile")
 router.register('customer', views.CustomerViewSet, base_name="customer")
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('insurer', views.InsurerView.as_view(), name='insurer')
+
 ]

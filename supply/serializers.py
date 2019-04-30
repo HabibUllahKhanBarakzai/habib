@@ -1,7 +1,9 @@
-from .models import Supplier, Order, Purchase, Discount
+from supply.models import Supplier, Order, Purchase, Discount
 from accounts.models import Mobile
+
 import datetime
-from rest_framework.serializers import Serializer
+
+from rest_framework.serializers import Serializer, ModelSerializer
 from rest_framework.exceptions import ValidationError
 
 
@@ -12,17 +14,22 @@ class OrderCreateSerializer(Serializer):
 
     def create(self, validated_data):
         supplier_id = self.initial_data.get("supplier_id")
-        supplier = Supplier.objects.get(id=supplier_id)
+
+        try:
+            supplier = Supplier.objects.get(id=supplier_id)
+
+        except Supplier.DoesNotExist:
+            raise ValidationError("This supplier does not exists")
+
         today = datetime.datetime.now()
         tod = today.strftime("%Y-%m-%d")
         my_order = Order()
         my_order.supplier = supplier
-        my_order.order_at = self.initial_data.get("ordered_at", tod)
+        my_order.order_at = self.initial_data.get("ordered_at", None)
         my_order.received_at = self.initial_data.get("received_at", tod)
         my_order.price_payed = self.initial_data.get("price_payed", 0)
-        my_order.discount = self.initial_data.get("discount", 0)
         my_order.installment_amount = self.initial_data.get("installment_amount")
-        my_order.next_installment_due = self.initial_data.get("next_installment_due", tod)
+        my_order.next_installment_due = self.initial_data.get("next_installment_due", today + datetime.timedelta(days=30))
         my_order.total_price = 0
         my_order.amount_remaining = 0
         my_order.installments_history = []
@@ -42,7 +49,6 @@ class OrderCreateSerializer(Serializer):
             my_mobile.type = cell_phone.get("mobile_type")
             my_mobile.save()
             purchase.order = my_order
-            print(my_mobile.id)
             purchase.mobile = my_mobile
             purchase.save()
 
@@ -63,7 +69,6 @@ class OrderCreateSerializer(Serializer):
             elif discount.get("type", 0) == 1:
                 my_order.actual_price = my_order.actual_price - disc.amount
 
-        my_order.next_installment_due = self.initial_data.get("next_installment_due", None)
         data = {
             "installment": my_order.price_payed,
             "date": today.strftime("%Y-%m-%d")
@@ -92,3 +97,9 @@ class OrderCreateSerializer(Serializer):
         instance.installments_history.append(data)
         instance.save()
         return instance
+
+
+class SupplierSerializer(ModelSerializer):
+    class Meta:
+        model = Supplier
+        fields = "__all__"

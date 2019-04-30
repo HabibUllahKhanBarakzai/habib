@@ -3,11 +3,15 @@ import datetime
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.views import APIView
+from rest_framework import status
+
 from django.db.models import Q
 
-from accounts.models import Transactions, Customer, Mobile
-from accounts.filtersets import MobileFilter
-from accounts.serializers import TransactionSerializer, GetTransactionSerializer, CustomerSerializer, MobileSerializer
+from accounts.models import Transactions, Customer, Mobile, Our_User
+# from accounts.filtersets import MobileFilter
+from accounts.serializers import TransactionSerializer,\
+    GetTransactionSerializer, CustomerSerializer, MobileSerializer, UserSerializer
 
 
 class TransactionViewSet(ModelViewSet):
@@ -65,10 +69,22 @@ class MobileViewSet(ModelViewSet):
     http_method_names = ('get', 'patch', 'put')
     model = Mobile
     serializer_class = MobileSerializer
-    filter_class = MobileFilter
+    # filter_class = MobileFilter
 
     def get_queryset(self):
         imea_number = self.request.query_params("IMEA_number")
         queryset = Mobile.objects.all(IMEA_number = imea_number)
         return queryset
+
+
+class InsurerView(APIView):
+
+    def get(self, request, *args, **kwargs):
+
+        queryset = Our_User.objects.filter(Q(first_insurer__isnull=False) | Q(second_insurer__isnull=False))
+        print(queryset.query)
+        serialize = UserSerializer(data=queryset, many=True)
+        serialize.is_valid()
+
+        return Response(data = serialize.data, status=status.HTTP_200_OK)
 
