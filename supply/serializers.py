@@ -40,7 +40,7 @@ class OrderCreateSerializer(Serializer):
         for cell_phone in purchases:
             my_mobile = Mobile()
             purchase = Purchase()
-            my_mobile.IMEA_number = cell_phone.get("IMEI_number")
+            my_mobile.imei_number = cell_phone.get("IMEI_number")
             purchase.discount = cell_phone.get("discount", 0)
             purchase.purchase_date = cell_phone.get("purchase_date", datetime.datetime.now())
             purchase.price = cell_phone.get("price")
@@ -102,4 +102,27 @@ class OrderCreateSerializer(Serializer):
 class SupplierSerializer(ModelSerializer):
     class Meta:
         model = Supplier
+        fields = "__all__"
+
+
+class PurchaseSerializer(ModelSerializer):
+    class Meta:
+        model = Purchase
+        fields = '__all__'
+
+
+class DiscountSerializer(ModelSerializer):
+    class Meta:
+        model = Discount
+        fields = "__all__"
+
+
+class OrderSerializer(ModelSerializer):
+
+    supplier = SupplierSerializer()
+    purchase = PurchaseSerializer(many=True)
+    discounts = DiscountSerializer(many=True, source='order_discounts')
+
+    class Meta:
+        model = Order
         fields = "__all__"

@@ -8,7 +8,7 @@ from .models import Our_User, Mobile, Transactions, Customer
 
 @admin.register(Mobile)
 class MobileAdmin(admin.ModelAdmin):
-    list_display = ('IMEA_number', )
+    list_display = ('imei_number', )
 
 
 @admin.register(Our_User)

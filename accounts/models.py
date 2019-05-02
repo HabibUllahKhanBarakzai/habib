@@ -28,7 +28,7 @@ class Mobile(models.Model):
 
     price = models.PositiveIntegerField()
     type = models.CharField(max_length=10)
-    IMEA_number = models.CharField(max_length=50, unique=True)
+    imei_number = models.CharField(max_length=50, unique=True)
     is_sold = models.BooleanField(default=False, verbose_name="Is product sold")
 
 

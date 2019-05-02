@@ -72,8 +72,8 @@ class MobileViewSet(ModelViewSet):
     # filter_class = MobileFilter
 
     def get_queryset(self):
-        imea_number = self.request.query_params("IMEA_number")
-        queryset = Mobile.objects.all(IMEA_number = imea_number)
+        imea_number = self.request.query_params.get("imei_number")
+        queryset = Mobile.objects.all(imei_number = imea_number)
         return queryset
 
 

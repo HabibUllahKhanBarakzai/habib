@@ -90,10 +90,10 @@ class TransactionSerializer(Serializer):
         customer = customer_serializer.create(validated_data=self.context['request'].data)
         mobile = self.initial_data.get("mobile")
         try:
-            our_mobile = Mobile.objects.get(IMEA_number=mobile.get("IMEI_number"), is_sold=False)
+            our_mobile = Mobile.objects.get(imei_number=mobile.get("IMEI_number"), is_sold=False)
 
         except Mobile.DoesNotExist:
-            raise ValidationError("mobile with that IMEA number is not in inventory")
+            raise ValidationError("mobile with that imei number is not in inventory")
 
         else:
             print("")
