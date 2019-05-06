@@ -3,7 +3,7 @@ from rest_framework.exceptions import ValidationError
 
 import datetime
 
-from accounts.models import Transactions, Customer, Our_User, Mobile
+from accounts.models import Transactions, Customer, Our_User, Mobile, TransactionReturn
 from django.http import Http404
 from django.db.models import Q
 
@@ -163,3 +163,40 @@ class TransactionSerializer(Serializer):
                     today + datetime.timedelta(days=30))
         instance.save()
         return instance
+
+
+class TransactionReturnSerializer(ModelSerializer):
+    class Meta:
+        model = TransactionReturn
+        fields = "__all__"
+
+    def create(self, validated_data):
+        transaction_id = self.initial_data.get("transaction", None)
+        mobile_sold = self.initial_data.get("imei_number", None)
+        transactions = None
+        if transaction_id:
+            try:
+                transactions = Transactions.objects.get(id=transaction_id)
+            except Transactions.DoesNotExist:
+                if mobile_sold:
+                    pass
+                else:
+                    raise Http404
+
+        if mobile_sold:
+            try:
+                transactions = Transactions.objects.get(sold_item__imei_number=mobile_sold)
+            except Transactions.DoesNotExist:
+                raise Http404
+
+        transaction_return = TransactionReturn()
+        transaction_return.transaction = transactions
+        transaction_return.amount_returned = self.initial_data.get("amount_returned")
+        transaction_return.date_of_return = self.initial_data.get("date", datetime.datetime.now().date())
+        transaction_return.reason = self.initial_data.get("reason", None)
+        Transactions.returned = True
+        transaction_return.save()
+        transactions.save()
+        return transaction_return
+
+

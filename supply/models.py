@@ -15,17 +15,17 @@ class Purchase(models.Model):
 
     price = models.PositiveIntegerField()
     discount = models.PositiveIntegerField()
-    purchase_date = models.DateField(default=timezone.now().date())
+    purchase_date = models.DateField(default=timezone.now())
 
 
 class Order(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name="order")
     order_at = models.DateField(null=True, blank=True)
-    received_at = models.DateField(default=timezone.now().date())
+    received_at = models.DateField(default=timezone.now())
     total_price = models.PositiveIntegerField()
     price_payed = models.PositiveIntegerField()
     installment_amount = models.PositiveIntegerField()
-    next_installment_due = models.DateField(default=timezone.now().date() + timezone.timedelta(days=30))
+    next_installment_due = models.DateField(default=timezone.now() + timezone.timedelta(days=30))
     amount_remaining = models.PositiveIntegerField()
     installments_history = ArrayField(JSONField(), verbose_name="History of installments payed",
                                       default=list)

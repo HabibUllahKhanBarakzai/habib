@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Our_User, Mobile, Transactions, Customer
+from .models import Our_User, Mobile, Transactions, Customer, TransactionReturn
 
 #
 # @admin.register(User)
@@ -20,3 +20,8 @@ class MobileAdmin(admin.ModelAdmin):
 class MobileAdmin(admin.ModelAdmin):
     list_display = ('sold_item', )
     raw_id_fields = ('sold_item', 'customer', 'insurer_one', 'insurer_two')
+
+
+@admin.register(TransactionReturn)
+class MobileAdmin(admin.ModelAdmin):
+    list_display = ('transaction', 'date_of_return')

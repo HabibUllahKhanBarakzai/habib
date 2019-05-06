@@ -8,10 +8,10 @@ from rest_framework import status
 
 from django.db.models import Q
 
-from accounts.models import Transactions, Customer, Mobile, Our_User
+from accounts.models import Transactions, Customer, Mobile, Our_User, TransactionReturn
 # from accounts.filtersets import MobileFilter
 from accounts.serializers import TransactionSerializer,\
-    GetTransactionSerializer, CustomerSerializer, MobileSerializer, UserSerializer
+    GetTransactionSerializer, CustomerSerializer, MobileSerializer, UserSerializer, TransactionReturnSerializer
 
 
 class TransactionViewSet(ModelViewSet):
@@ -85,9 +85,14 @@ class InsurerView(APIView):
     def get(self, request, *args, **kwargs):
 
         queryset = Our_User.objects.filter(Q(first_insurer__isnull=False) | Q(second_insurer__isnull=False))
-        print(queryset.query)
         serialize = UserSerializer(data=queryset, many=True)
         serialize.is_valid()
 
         return Response(data = serialize.data, status=status.HTTP_200_OK)
 
+
+class ReturnTransactionViewSet(ModelViewSet):
+
+    model = TransactionReturn
+    queryset = TransactionReturn.objects.all()
+    serializer_class = TransactionReturnSerializer

@@ -49,7 +49,14 @@ class Transactions(models.Model):
     number_of_installments_payed = models.PositiveIntegerField(
         default=0, verbose_name="Number Of Installments Payed")
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer", unique=False)
-    is_return = models.BooleanField(default=False)
+    returned = models.BooleanField(default=False)
     installments_payed = ArrayField(JSONField(), verbose_name="History of installments payed",
                                     default=list)
     installment_amount = models.PositiveIntegerField()
+
+
+class TransactionReturn(models.Model):
+    transaction = models.OneToOneField(Transactions, on_delete=models.CASCADE, related_name="return_transaction")
+    date_of_return = models.DateField(default=None)
+    amount_returned = models.PositiveIntegerField()
+    reason = models.CharField(null=True, blank=True, max_length=450)
