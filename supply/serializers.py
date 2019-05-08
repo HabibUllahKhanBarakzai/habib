@@ -5,6 +5,7 @@ import datetime
 
 from rest_framework.serializers import Serializer, ModelSerializer
 from rest_framework.exceptions import ValidationError
+from django.db import IntegrityError
 
 
 class OrderCreateSerializer(Serializer):
@@ -38,19 +39,26 @@ class OrderCreateSerializer(Serializer):
         purchases = self.initial_data.get("purchase")
         price_complete = 0
         for cell_phone in purchases:
-            my_mobile = Mobile()
-            purchase = Purchase()
-            my_mobile.imei_number = cell_phone.get("IMEI_number")
-            purchase.discount = cell_phone.get("discount", 0)
-            purchase.purchase_date = cell_phone.get("purchase_date", datetime.datetime.now())
-            purchase.price = cell_phone.get("price")
-            my_mobile.price = purchase.price - purchase.discount
-            price_complete += my_mobile.price
-            my_mobile.type = cell_phone.get("mobile_type")
-            my_mobile.save()
-            purchase.order = my_order
-            purchase.mobile = my_mobile
-            purchase.save()
+            try:
+                my_mobile = Mobile()
+                purchase = Purchase()
+                my_mobile.imei_number = cell_phone.get("IMEI_number")
+
+            except IntegrityError:
+                raise ValidationError("Mobile with that IMEI number already exists ")
+
+            else:
+                purchase.discount = cell_phone.get("discount", 0)
+                purchase.purchase_date = cell_phone.get("purchase_date", datetime.datetime.now())
+                purchase.price = cell_phone.get("price")
+                my_mobile.price = purchase.price - purchase.discount
+                price_complete += my_mobile.price
+                my_mobile.type = cell_phone.get("mobile_type")
+                my_mobile.save()
+                purchase.order = my_order
+                purchase.mobile = my_mobile
+                purchase.save()
+
 
         my_order.total_price = price_complete
         my_order.actual_price = price_complete
@@ -80,6 +88,7 @@ class OrderCreateSerializer(Serializer):
 
     def update(self, instance, validated_data):
         installment = self.initial_data.get("installment")
+        date = self.initial_data.get("date")
         if installment is None:
             raise ValidationError("Please Enter installment amount")
 
@@ -92,7 +101,7 @@ class OrderCreateSerializer(Serializer):
         instance.amount_remaining = instance.amount_remaining - installment
         data = {
             "installment": installment,
-            "date": today.strftime("%Y-%m-%d")
+            "date": today.strftime("%Y-%m-%d") if not date else date
         }
         instance.installments_history.append(data)
         instance.save()

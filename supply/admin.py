@@ -8,7 +8,7 @@ class SupplierAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class Order(admin.ModelAdmin):
-    list_display = ('order_at', 'supplier', 'total_price')
+    list_display = ('id', 'order_at', 'supplier', 'total_price')
 
 
 @admin.register(Purchase)
