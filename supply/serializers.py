@@ -76,6 +76,7 @@ class OrderCreateSerializer(Serializer):
 
             elif discount.get("type", 0) == 1:
                 my_order.actual_price = my_order.actual_price - disc.amount
+            disc.save()
 
         data = {
             "installment": my_order.price_payed,
