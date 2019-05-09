@@ -1,11 +1,14 @@
 from supply.models import Supplier, Order, Purchase, Discount
 from accounts.models import Mobile
+from accounts.serializers import MobileSerializer
 
 import datetime
 
 from rest_framework.serializers import Serializer, ModelSerializer
 from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
+from django.db import connection
+
 
 
 class OrderCreateSerializer(Serializer):
@@ -22,6 +25,14 @@ class OrderCreateSerializer(Serializer):
         except Supplier.DoesNotExist:
             raise ValidationError("This supplier does not exists")
 
+        purchases = self.initial_data.get("purchase")
+        with connection.cursor() as cursor:
+            for cell_phone in purchases:
+                imei_number = cell_phone.get("IMEI_number")
+                cursor.execute('''select id from accounts_mobile where imei_number = %s ''',([imei_number]))
+                result = cursor.fetchall()
+                if result:
+                    raise ValidationError("Mobile with imei_number {} already in inventory".format(imei_number))
         today = datetime.datetime.now()
         tod = today.strftime("%Y-%m-%d")
         my_order = Order()
@@ -36,7 +47,6 @@ class OrderCreateSerializer(Serializer):
         my_order.installments_history = []
         my_order.save()
 
-        purchases = self.initial_data.get("purchase")
         price_complete = 0
         for cell_phone in purchases:
             try:
@@ -58,7 +68,6 @@ class OrderCreateSerializer(Serializer):
                 purchase.order = my_order
                 purchase.mobile = my_mobile
                 purchase.save()
-
 
         my_order.total_price = price_complete
         my_order.actual_price = price_complete
@@ -116,6 +125,8 @@ class SupplierSerializer(ModelSerializer):
 
 
 class PurchaseSerializer(ModelSerializer):
+    mobile = MobileSerializer()
+
     class Meta:
         model = Purchase
         fields = '__all__'

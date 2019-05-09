@@ -73,6 +73,7 @@ class MobileViewSet(ModelViewSet):
 
     def get_queryset(self):
         imea_number = self.request.query_params.get("imei_number")
+        sold = self.request.query_params.get("sold")
         if imea_number:
             queryset = Mobile.objects.filter(imei_number = imea_number)
         else:
@@ -88,7 +89,7 @@ class InsurerView(APIView):
         serialize = UserSerializer(data=queryset, many=True)
         serialize.is_valid()
 
-        return Response(data = serialize.data, status=status.HTTP_200_OK)
+        return Response(data=serialize.data, status=status.HTTP_200_OK)
 
 
 class ReturnTransactionViewSet(ModelViewSet):
