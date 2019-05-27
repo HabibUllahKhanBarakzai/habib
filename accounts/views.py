@@ -30,33 +30,18 @@ class TransactionViewSet(ModelViewSet):
 
 class TransactionReportsViewSet(ReadOnlyModelViewSet):
     model = Transactions
-    serializer_class = TransactionSerializer
+    serializer_class = GetTransactionSerializer
     queryset = Transactions.objects.all()
 
     def list(self, request, *args, **kwargs):
-        _high = datetime.datetime.today() + datetime.timedelta(2)
-        _medium = datetime.datetime.today() + datetime.timedelta(5)
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
 
-        high = self.queryset.filter(next_installment_due__lte=_high)
-        medium = self.queryset.filter(next_installment_due__lte=_medium,
-                                      next_installment_due__gte=_high)
-        low = self.queryset.filter(next_installment_due__gte=_medium)
-
+        high = self.queryset.filter(next_installment_due__gte=start_date, next_installment_due__lte=end_date)
         ser_high = self.get_serializer(data=high, many=True)
         ser_high.is_valid()
-        ser_medium = self.get_serializer(data=medium, many=True)
-        ser_medium.is_valid()
-        ser_low = self.get_serializer(data=low, many=True)
-        ser_low.is_valid()
 
-        response_data = {
-            'high': ser_high.data,
-            'medium': ser_medium.data,
-            'low': ser_low.data
-        }
-        print(response_data)
-
-        return Response(response_data)
+        return Response(data=ser_high.data, status=status.HTTP_200_OK)
 
 
 class CustomerViewSet(ModelViewSet):
