@@ -144,12 +144,16 @@ class TransactionSerializer(Serializer):
 
     def update(self, instance, validated_data):
 
+        if instance.is_complete:
+            return ValidationError("Transaction is completed, Customer has payed its dues")
+
         installment = self.initial_data.get("installment", None) if self.initial_data.get("installment")\
             else instance.installment_amount
 
         today = datetime.datetime.now().date()
         if installment > instance.amount_remaining:
             raise ValidationError("amount remaining is less than installment amount you are entering")
+
         instance.amount_payed = instance.amount_payed + installment
         instance.amount_remaining = instance.sold_item.price - instance.amount_payed
         instance.number_of_installments_payed += 1
@@ -161,6 +165,9 @@ class TransactionSerializer(Serializer):
         next_installment = self.initial_data.get("next_installment_due", None)
         instance.next_installment_due = next_installment if next_installment is not None else (
                     today + datetime.timedelta(days=30))
+
+        if instance.amount_remaining == 0:
+            instance.is_complete = True
         instance.save()
         return instance
 

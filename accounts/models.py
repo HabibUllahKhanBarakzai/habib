@@ -53,6 +53,7 @@ class Transactions(models.Model):
     installments_payed = ArrayField(JSONField(), verbose_name="History of installments payed",
                                     default=list)
     installment_amount = models.PositiveIntegerField()
+    is_complete = models.BooleanField(default=False)
 
 
 class TransactionReturn(models.Model):
