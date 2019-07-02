@@ -67,10 +67,10 @@ class MobileViewSet(ModelViewSet):
     def get_queryset(self):
         imea_number = self.request.query_params.get("imei_number")
         sold = self.request.query_params.get("sold")
+        queryset = Mobile.objects.filter(is_sold=False)
         if imea_number:
-            queryset = Mobile.objects.filter(imei_number = imea_number)
-        else:
-            queryset = Mobile.objects.all()
+            queryset = Mobile.objects.filter(imei_number=imea_number)
+
         return queryset
 
 
