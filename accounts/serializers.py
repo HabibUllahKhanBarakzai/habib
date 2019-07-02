@@ -49,11 +49,13 @@ class CustomerCreateSerializer(Serializer):
         customer = validated_data.get("customer", None)
         CNIC_number = customer.get("cnic_number", None)
         try:
-            customer = Customer.objects.get(user__CNIC_number=CNIC_number)
+            customers = Customer.objects.get(user__CNIC_number=CNIC_number)
         except Customer.DoesNotExist:
 
             if Our_User.objects.filter(CNIC_number=CNIC_number).exists():
                 user = Our_User.objects.get(CNIC_number=CNIC_number)
+                user.name = customer.get("name")
+                user.save()
                 customer_existing = Customer.objects.create(user=user)
                 return customer_existing
 
@@ -72,7 +74,10 @@ class CustomerCreateSerializer(Serializer):
                 return customer_new
 
         else:
-            return customer
+            if customer.get("name", None):
+                customers.user.name = customer.get("name", None)
+                customers.user.save()
+            return customers
 
 
 class TransactionSerializer(Serializer):
@@ -85,7 +90,8 @@ class TransactionSerializer(Serializer):
 
         if self.context['request'].data is None:
             raise Http404
-
+        for val in validated_data:
+            print(val)
         customer_serializer = CustomerCreateSerializer()
         customer = customer_serializer.create(validated_data=self.context['request'].data)
         mobile = self.initial_data.get("mobile")
