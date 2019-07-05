@@ -12,6 +12,7 @@ router.register("transactions", views.TransactionViewSet, base_name="transaction
 router.register("reports", views.TransactionReportsViewSet, base_name="reports")
 router.register('mobile', views.MobileViewSet, base_name="mobile")
 router.register('customer', views.CustomerViewSet, base_name="customer")
+router.register('inventory', views.InventoryViewSet, base_name="inventory")
 
 urlpatterns = [
     path('insurer', views.InsurerView.as_view(), name='insurer'),

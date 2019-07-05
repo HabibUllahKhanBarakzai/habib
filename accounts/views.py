@@ -90,3 +90,9 @@ class ReturnTransactionViewSet(ModelViewSet):
     model = TransactionReturn
     queryset = TransactionReturn.objects.all()
     serializer_class = TransactionReturnSerializer
+
+
+class InventoryViewSet(ModelViewSet):
+    model = Mobile
+    queryset = Mobile.objects.all()
+    serializer_class = MobileSerializer

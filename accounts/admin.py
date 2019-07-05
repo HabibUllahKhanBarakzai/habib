@@ -18,7 +18,7 @@ class MobileAdmin(admin.ModelAdmin):
 
 @admin.register(Transactions)
 class MobileAdmin(admin.ModelAdmin):
-    list_display = ('sold_item', 'get_user_name' )
+    list_display = ('id', 'sold_item', 'get_user_name', 'returned' )
     raw_id_fields = ('sold_item', 'customer', 'insurer_one', 'insurer_two')
 
     def get_user_name(self, obj):
