@@ -99,6 +99,10 @@ class OrderCreateSerializer(Serializer):
     def update(self, instance, validated_data):
         installment = self.initial_data.get("installment")
         date = self.initial_data.get("date")
+
+        if instance.amount_remaining == 0:
+            raise ValidationError("The transaction has completed as remaining amount is zero")
+
         if installment is None:
             raise ValidationError("Please Enter installment amount")
 

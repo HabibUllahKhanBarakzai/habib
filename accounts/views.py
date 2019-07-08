@@ -27,6 +27,10 @@ class TransactionViewSet(ModelViewSet):
         else:
             return TransactionSerializer
 
+    def get_queryset(self):
+
+        returned = self.request.query_params.get('return')
+
 
 class TransactionReportsViewSet(ReadOnlyModelViewSet):
     model = Transactions
