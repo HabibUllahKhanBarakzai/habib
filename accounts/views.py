@@ -35,21 +35,26 @@ class TransactionReportsViewSet(ReadOnlyModelViewSet):
     queryset = Transactions.objects.filter(is_complete=False, returned=False)
 
     def list(self, request, *args, **kwargs):
-        type = request.query_params.get('start_date')
+
+        type = request.query_params.get('type')
         start_date = datetime.datetime.now().strftime("%Y-%m-%d")
         end_date = request.query_params.get('end_date')
-        print(start_date)
+
+        print("start ",start_date)
+        print("type parameter", type)
 
         if type is "0":
+            print("in zero")
             high = self.queryset.filter(next_installment_due__gte=start_date, next_installment_due__lte=end_date)
 
         else:
-            print("in else")
+            print("in else of type")
             high = self.queryset.filter(next_installment_due__lte=start_date)
 
         ser_high = self.get_serializer(data=high, many=True)
-        ser_high.is_valid()
 
+        ser_high.is_valid()
+        print(ser_high.data)
         return Response(data=ser_high.data, status=status.HTTP_200_OK)
 
 
