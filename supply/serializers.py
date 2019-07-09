@@ -73,7 +73,6 @@ class OrderCreateSerializer(Serializer):
         my_order.actual_price = price_complete
 
         discounts = self.initial_data.get("discount")
-
         for discount in discounts:
             disc = Discount()
             disc.discount_type = discount.get("type", 0)
