@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     # 'rest_framework_filters'
     'accounts',
     'supply',
-
+    'rangefilter',
 ]
 
 MIDDLEWARE = [
@@ -91,7 +91,7 @@ DATABASES = {
         'PORT': '5432'
     }
  }
-#
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
