@@ -33,4 +33,23 @@ class MobileAdmin(admin.ModelAdmin):
 
 @admin.register(TransactionReturn)
 class MobileAdmin(admin.ModelAdmin):
-    list_display = ('transaction', 'date_of_return')
+    list_display = ('get_name', 'get_mobile_imei', 'get_mobile_type', 'date_of_return', 'amount_returned', 'reason')
+    raw_id_fields = ('transaction', )
+    search_fields = ('transaction__customer__user__name', )
+
+    def get_name(self, obj):
+        return obj.transaction.customer.user.name
+
+    get_name.short_description = "customer_name"
+
+    def get_mobile_imei(self, obj):
+        return obj.transaction.sold_item.imei_number
+
+    get_mobile_imei.short_description = "imei_number"
+
+    def get_mobile_type(self, obj):
+        return obj.transaction.sold_item.type
+
+    get_mobile_type.short_description = "mobile_type"
+
+
