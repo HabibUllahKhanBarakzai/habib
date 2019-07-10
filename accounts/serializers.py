@@ -213,3 +213,9 @@ class TransactionReturnSerializer(ModelSerializer):
         return transaction_return
 
 
+class ListTransactionReturnSerializer(ModelSerializer):
+    transaction = GetTransactionSerializer(many=False)
+
+    class Meta:
+        model = TransactionReturn
+        fields = "__all__"

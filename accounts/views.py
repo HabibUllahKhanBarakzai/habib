@@ -11,7 +11,8 @@ from django.db.models import Q
 from accounts.models import Transactions, Customer, Mobile, Our_User, TransactionReturn
 # from accounts.filtersets import MobileFilter
 from accounts.serializers import TransactionSerializer,\
-    GetTransactionSerializer, CustomerSerializer, MobileSerializer, UserSerializer, TransactionReturnSerializer
+    GetTransactionSerializer, CustomerSerializer, MobileSerializer, UserSerializer, TransactionReturnSerializer,\
+    ListTransactionReturnSerializer
 
 
 class TransactionViewSet(ModelViewSet):
@@ -95,7 +96,13 @@ class ReturnTransactionViewSet(ModelViewSet):
 
     model = TransactionReturn
     queryset = TransactionReturn.objects.all()
-    serializer_class = TransactionReturnSerializer
+
+    def get_serializer_class(self):
+
+        if self.action in ('list', 'retrieve'):
+            return ListTransactionReturnSerializer
+
+        return TransactionReturnSerializer
 
 
 class InventoryViewSet(ModelViewSet):
