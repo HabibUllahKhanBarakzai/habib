@@ -3,7 +3,7 @@ binaryornot==0.4.4
 certifi==2019.3.9
 chardet==3.0.4
 Click==7.0
-cookiecutter==1.6.0
+cookiecutter==2.1.1
 Django==2.2
 django-json-field==0.5.7
 django-shell-plus==1.1.7
